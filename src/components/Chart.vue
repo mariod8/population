@@ -1,33 +1,32 @@
 <template>
-  <div class="flex flex-col items-center justify-center w-full">
-    <span class="py-4 font-bold">{{ location }} population in {{ year }}</span>
-    <div class="flex flex-col [&>div>*]:h-[13px] gap-[4px] items-center">
-      <div v-for="data in graphData" class="flex flex-row">
-        <span
-          class="font-extrabold text-[.6rem] items-center justify-center inline-flex mr-[6px]"
-          >{{ formatNumber(data.males.amount) }}</span
-        >
-        <div
-          :style="{
-            width: `${calcBarWidth(data.males.ratio)}px`,
-            backgroundSize: `${barWidth}px 100%`
-          }"
-          class="min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2 float-left scale-[-1]"
-        ></div>
-        <span class="font-bold text-[.55rem] items-center justify-between inline-flex w-[50px]">
+  <div class="flex flex-col w-[500px] bg-black-1 bg-opacity-75 p-5 rounded-3xl text-center">
+    <span class="font-bold text-lg">{{ location }} population in {{ year }}</span>
+    <div class="flex flex-col gap-[3px]">
+      <div
+        v-for="data in graphData"
+        class="items-center flex flex-row [&>div]:leading-4 [&>div]:flex-auto"
+      >
+        <div class="">
+          <div
+            :style="{
+              width: `${data.males.ratio * 100}%`,
+              backgroundSize: `100% 100%`
+            }"
+            class="ml-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2 scale-[-1] drop-shadow-md"
+          ></div>
+        </div>
+        <div class="basis-[50px] max-w-[50px] text-center text-sm">
           {{ data.ageRange.start }}-{{ data.ageRange.end }}
-        </span>
-        <div
-          :style="{
-            width: `${calcBarWidth(data.females.ratio)}px`,
-            backgroundSize: `${barWidth}px 100%`
-          }"
-          class="min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2"
-        ></div>
-        <span
-          class="font-extrabold text-[.6rem] items-center justify-center inline-flex float-right"
-          >{{ formatNumber(data.females.amount) }}</span
-        >
+        </div>
+        <div class="">
+          <div
+            :style="{
+              width: `${data.males.ratio * 100}%`,
+              backgroundSize: `100% 100%`
+            }"
+            class="mr-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2"
+          ></div>
+        </div>
       </div>
     </div>
   </div>
@@ -41,10 +40,7 @@ const ageGrouping = 3
 
 export default {
   data() {
-    return {
-      chartWidth: 400,
-      barWidth: 100
-    }
+    return {}
   },
   methods: {
     formatNumber,
@@ -79,7 +75,7 @@ export default {
       })
     },
     calcBarWidth(percent: number) {
-      return this.barWidth * percent
+      return percent
     }
   },
   computed: {
@@ -100,7 +96,7 @@ export default {
             ratio: this.data[this.location].info[this.year].females[i] / max
           }
         }
-        
+
         age += ageGrouping
         return data
       })

@@ -6,16 +6,16 @@
 <script lang="ts">
 import * as THREE from "three"
 import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js"
+import CameraControls from "camera-controls"
+CameraControls.install({ THREE })
 import { randomHexColor } from "@/utils"
+import { randFloat } from "three/src/math/MathUtils"
 
 export default {
   data() {
     return {
       selected: "",
-      strokeMaterial: new THREE.LineBasicMaterial({
-        color: "#00A5E6"
-      }),
       extrusion: 2,
       mapSvg: `<svg
     xmlns:mapsvg="http://mapsvg.com"
@@ -1311,54 +1311,56 @@ export default {
       const loader = new SVGLoader()
       const svgData = loader.parse(this.mapSvg)
       const svgGroup = new THREE.Group()
-      var countryCodes: any = {}
+      var meshData: { [countryCode: string]: { geometries: THREE.BufferGeometry[] } } = {}
 
       svgGroup.scale.y *= -1
       svgData.paths.forEach((path) => {
-        countryCodes[path.userData?.node.id as string] = new THREE.MeshBasicMaterial({
-          color: randomHexColor()
-        })
+        const id = path.userData?.node.id as string
+        meshData[id] = {
+          geometries: []
+        }
       })
 
       svgData.paths.forEach((path) => {
         const shapes = SVGLoader.createShapes(path)
 
         shapes.forEach((shape) => {
-          const top = new THREE.ShapeGeometry(shape)
           const meshGeometry = new THREE.ExtrudeGeometry(shape, {
             depth: this.extrusion,
             bevelEnabled: false
           })
-          const linesGeometry = new THREE.EdgesGeometry(top)
-          const mesh = new THREE.Mesh(meshGeometry, countryCodes[path.userData?.node.id])
-          mesh.userData.id = path.userData?.node.id
-          const lines = new THREE.LineSegments(linesGeometry, this.strokeMaterial)
-          svgGroup.add(mesh)
+          meshData[path.userData?.node.id].geometries.push(meshGeometry)
         })
       })
+      for (const cc in meshData) {
+        const geometry = BufferGeometryUtils.mergeBufferGeometries(meshData[cc].geometries)
 
+        geometry.computeBoundingSphere()
+        const mesh = new THREE.Mesh(
+          geometry,
+          new THREE.MeshBasicMaterial({
+            color: randomHexColor()
+          })
+        )
+        mesh.userData.id = cc
+        svgGroup.add(mesh)
+      }
       const box = new THREE.Box3().setFromObject(svgGroup)
       const size = box.getSize(new THREE.Vector3())
       const yOffset = size.y / -2
       const xOffset = size.x / -2
 
-      // Offset all of group's elements, to center them
       svgGroup.children.forEach((item) => {
-        item.addEventListener("mouseover", (event) => {
-          console.log(Math.random())
-        })
         item.position.x = xOffset
         item.position.y = yOffset
       })
       svgGroup.rotateX(-Math.PI / 2)
-
-      return {
-        object: svgGroup
-      }
+      return svgGroup
     },
     setupScene() {
       const scene = new THREE.Scene()
       const canvas = document.getElementById("canvas")!
+      const clock = new THREE.Clock()
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, depth: true })
       const pointer = new THREE.Vector2()
       const camera = new THREE.PerspectiveCamera(
@@ -1367,61 +1369,67 @@ export default {
         0.01,
         2000
       )
+      camera.position.set(100, 100, 100)
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      canvas.append(renderer.domElement)
       const ambientLight = new THREE.AmbientLight("#888888")
       const pointLight = new THREE.PointLight("#ffffff", 2, 800)
-      const controls = new OrbitControls(camera, renderer.domElement)
+      const controls = new CameraControls(camera, renderer.domElement)
       const raycaster = new THREE.Raycaster()
+      const worldMap = this.renderSVG()
 
-      controls.enableDamping = true
-      controls.zoomSpeed = 3
       controls.maxPolarAngle = Math.PI / 2.5
-      controls.maxZoom = 5
-      controls.enablePan = false
-      const animate = () => {
-        renderer.render(scene, camera)
-        controls.update()
+      function animate() {
+        const delta = clock.getDelta()
+        const updated = controls.update(delta)
 
         requestAnimationFrame(animate)
+
+        if (updated) {
+          renderer.render(scene, camera)
+        }
       }
-
-      renderer.setSize(window.innerWidth, window.innerHeight)
       scene.add(ambientLight, pointLight)
-      camera.position.z = 100
-      camera.position.x = 100
-      camera.position.y = 100
+      scene.add(worldMap)
+      renderer.render(scene, camera)
+      animate()
 
-      canvas.append(renderer.domElement)
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight
         camera.updateProjectionMatrix()
         renderer.setSize(window.innerWidth, window.innerHeight)
+        renderer.render(scene, camera)
       })
+
       window.addEventListener("click", (event) => {
         if (!(event.target instanceof HTMLCanvasElement)) return
         const rect = event.target.getBoundingClientRect()
+
         pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
         pointer.y = (-(event.clientY - rect.top) / rect.height) * 2 + 1
         raycaster.setFromCamera(pointer, camera)
-
         const intersects = raycaster.intersectObjects(scene.children)
-
         if (intersects.length) {
-          this.selected = intersects[0].object.userData.id
+          const object = intersects[0].object
+          if (this.selected === object.userData.id) return
+          this.selected = object.userData.id
+
+          controls.fitToBox(object, true, {
+            paddingLeft: 10,
+            paddingRight: 10,
+            paddingBottom: 10,
+            paddingTop: 10
+          })
+          controls.rotateTo(randFloat(-Math.PI / 5, Math.PI / 5), randFloat(0.25, 0.75), true)
         }
       })
-      window.addEventListener("pointermove", (event) => {
-
-
-      })
-      animate()
 
       return scene
     }
   },
   mounted() {
-    const scene = this.setupScene()
-    const { object } = this.renderSVG()
-    scene.add(object)
+    this.setupScene()
+    console.log("loaded")
   }
 }
 </script>
