@@ -52,11 +52,7 @@ def main():
             oPop += f'"W":'
         else:
             continue
-        oPop += (
-            "{"
-            + f"\"name\": \"{location[0]}\",\"info\": "
-            + "{"
-        )
+        oPop += "{" + f'"name": "{location[0]}","info": ' + "{"
         print(location[0])
         oPopType += f'"{location[0]}",'
         year_data = rest.groupby(["Time"])
@@ -69,7 +65,7 @@ def main():
             oPop += f"{year[0]}:"
             oPop += (
                 "{"
-                + f"\"males\": {list(np.add.reduceat(m, np.arange(0, len(m), age_group)))},\"females\": {list(np.add.reduceat(f, np.arange(0, len(f), age_group)))}"
+                + f'"males": {list(np.add.reduceat(m, np.arange(0, len(m), age_group)))},"females": {list(np.add.reduceat(f, np.arange(0, len(f), age_group)))}'
                 + "},"
             )
         oPop += "}" + "},"
