@@ -3,9 +3,9 @@ def main():
     import numpy as np
     import math
 
-    age_group = 3
+    age_group = 5
 
-    filename = "src/data/population_age.csv"
+    filename = "src/data/population_data.csv"
     outputfile = "src/data/data.ts"
 
     data = pd.read_csv(filename, dtype=str)
@@ -46,15 +46,21 @@ def main():
 
     export default {
     """
-    i = 10
-    everyloc = False
+    i = 20
+    everyloc = True
     for location, rest in data:
-        print(location[0])
+        if str(rest["ISO2_code"].unique()[0]) != "nan":
+            oPop += f'"{rest["ISO2_code"].unique()[0]}":'
+        elif location[0] == "World":
+            oPop += f'"W":'
+        else:
+            continue
         oPop += (
-            f'"{location[0]}":'
+            "{"
+            + f"'name': \"{location[0]}\",'info': "
             + "{"
-            + f"'code': \"{rest['ISO2_code'].unique()[0] if rest['ISO2_code'].unique()[0] != 'nan' else 'none'}\",'info': " + "{"
         )
+        print(location[0])
         oPopType += f'"{location[0]}",'
         year_data = rest.groupby(["Time"])
 
@@ -69,7 +75,7 @@ def main():
                 + f"'males': {list(np.add.reduceat(m, np.arange(0, len(m), age_group)))},'females': {list(np.add.reduceat(f, np.arange(0, len(f), age_group)))}"
                 + "},"
             )
-        oPop += "}"+"},"
+        oPop += "}" + "},"
         i -= 1
         if i == 0 and not everyloc:
             break

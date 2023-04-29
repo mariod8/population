@@ -16,3 +16,7 @@ export function randomHexColor() {
     return (~~(Math.random() * 16)).toString(16)
   })
 }
+
+export function numberWithCommas(x: number) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

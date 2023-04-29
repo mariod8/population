@@ -8,7 +8,7 @@ export type LocationData = {
 }
 
 export type Location = {
-  code: string
+  name: string
   info: LocationData
 }
 

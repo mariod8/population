@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
-      "grad1-1": "#3a6186",
-      "grad1-2": "#89253e",
+      "grad1-1": "#24C6DC",
+      "grad1-2": "#514A9D",
       "black-1": "#222831",
       "black-2": "#393E46",
       "white-1": "#EEEEEE",
