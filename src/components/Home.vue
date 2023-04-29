@@ -10,7 +10,7 @@
 <script lang="ts">
 import Map from "@/components/Map.vue"
 import Chart from "@/components/Chart.vue"
-import data from "@/data/data"
+import data from "@/data/data.json"
 import type { Data, LocationData } from "@/types"
 
 export default {

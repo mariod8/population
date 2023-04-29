@@ -6,7 +6,7 @@ def main():
     age_group = 5
 
     filename = "src/data/population_data.csv"
-    outputfile = "src/data/data.ts"
+    outputfile = "src/data/data.json"
 
     data = pd.read_csv(filename, dtype=str)
     data = data[
@@ -41,10 +41,7 @@ def main():
     enum Locations {
 
      """
-    oPop = """
-    import type { Data } from "@/types";
-
-    export default {
+    oPop = """{
     """
     i = 20
     everyloc = True
@@ -57,7 +54,7 @@ def main():
             continue
         oPop += (
             "{"
-            + f"'name': \"{location[0]}\",'info': "
+            + f"\"name\": \"{location[0]}\",\"info\": "
             + "{"
         )
         print(location[0])
@@ -72,14 +69,14 @@ def main():
             oPop += f"{year[0]}:"
             oPop += (
                 "{"
-                + f"'males': {list(np.add.reduceat(m, np.arange(0, len(m), age_group)))},'females': {list(np.add.reduceat(f, np.arange(0, len(f), age_group)))}"
+                + f"\"males\": {list(np.add.reduceat(m, np.arange(0, len(m), age_group)))},\"females\": {list(np.add.reduceat(f, np.arange(0, len(f), age_group)))}"
                 + "},"
             )
         oPop += "}" + "},"
         i -= 1
         if i == 0 and not everyloc:
             break
-    oPop += "} as Data"
+    oPop += "}"
     oPopType += "}"
 
     o = open(outputfile, "w")

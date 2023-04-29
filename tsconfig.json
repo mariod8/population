@@ -6,7 +6,9 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "lib": ["es2022", "DOM"]
+    "lib": ["es2022", "DOM"],
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
 
   "references": [
