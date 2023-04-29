@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col text-center">
+  <div class="select-none flex flex-col text-center w-full">
     <div class="my-4 flex flex-col">
       <span class="font-bold text-lg"
         >{{ data[location].name }} population in the year {{ year }}</span
@@ -12,9 +12,9 @@
           <span class="mr-4">{{ formatNumber(data.males.amount) }}</span>
           <div
             :style="{
-              width: `${data.males.ratio * 80}%`
+              width: `${data.males.ratio * 50}%`
             }"
-            class="ml-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2 scale-[-1] drop-shadow-md"
+            class="ml-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2 scale-[-1]"
           ></div>
         </div>
         <div class="basis-[50px] max-w-[50px] text-center text-sm">
@@ -23,7 +23,7 @@
         <div class="flex flex-row flex-1">
           <div
             :style="{
-              width: `${data.males.ratio * 80}%`
+              width: `${data.males.ratio * 50}%`
             }"
             class="mr-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2"
           ></div>
