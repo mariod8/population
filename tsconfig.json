@@ -8,7 +8,7 @@
     },
     "lib": ["es2022", "DOM"],
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
   },
 
   "references": [
