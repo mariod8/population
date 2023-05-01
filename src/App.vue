@@ -4,6 +4,6 @@ import { RouterView } from "vue-router"
 
 <template>
   <header></header>
-  <RouterView />
+  <RouterView class="h-screen" />
   <footer></footer>
 </template>

@@ -7,9 +7,14 @@
       <span class="font-bold text-lg">{{ numberWithCommas(countryPopulation) }}</span>
     </div>
     <div class="flex flex-col gap-[3px]">
+      <div class="items-center flex flex-row [&>div]:leading-4 opacity-75">
+        <span class="flex justify-start flex-1">Males</span>
+        <span>Age</span>
+        <span class="flex justify-end flex-1">Females</span>
+      </div>
       <div v-for="data in graphData" class="items-center flex flex-row [&>div]:leading-4">
         <div class="flex flex-row flex-1">
-          <span class="mr-4">{{ formatNumber(data.males.amount) }}</span>
+          <span>{{ formatNumber(data.males.amount) }}</span>
           <div
             :style="{
               width: `${data.males.ratio * 50}%`
@@ -27,13 +32,15 @@
             }"
             class="mr-auto h-4 min-w-[2px] rounded-full bg-gradient-to-r from-grad1-1 to-grad1-2"
           ></div>
-          <span class="ml-4">{{ formatNumber(data.females.amount) }}</span>
+          <span>{{ formatNumber(data.females.amount) }}</span>
         </div>
       </div>
     </div>
     <div class="bg-white-2 bg-opacity-25 rounded-full h-1 w-full my-5"></div>
     <span class="font-bold text-lg">World population</span>
-    <span class="font-bold text-2xl">{{ worldPopulation }}</span>
+    <span class="font-bold text-2xl">{{
+      numberWithCommas(Math.trunc(tweenedWorldPopulation))
+    }}</span>
   </div>
 </template>
 <script lang="ts">
@@ -41,6 +48,7 @@ import type { Data, LocationData } from "@/types"
 import { formatNumber, numberWithCommas } from "@/utils"
 import type { PropType } from "vue"
 import gsap from "gsap"
+import { randFloat } from "three/src/math/MathUtils"
 
 const ageGrouping = 5
 
@@ -98,12 +106,6 @@ export default {
     countryPopulation() {
       return this.populationPerAge().reduce((sum, current) => sum + current, 0)
     },
-    tweenWorldPopulation() {
-      return gsap.to(this, {
-        duration: 0.5,
-        tweened: this.worldPopulation
-      })
-    },
     graphData() {
       const max = this.maxGenderValue()
       this.calcWorldPopulation()
@@ -125,6 +127,15 @@ export default {
 
         age += ageGrouping
         return data
+      })
+    }
+  },
+  watch: {
+    worldPopulation(wp: number) {
+      gsap.to(this, {
+        duration: randFloat(2, 3),
+        tweenedWorldPopulation: wp || 0,
+        ease: "power4.out"
       })
     }
   },
