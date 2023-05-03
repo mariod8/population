@@ -4,15 +4,15 @@
       opacity: `${tweenedLoadingScreenOpacity}%`
     }"
     v-if="tweenedLoadingScreenOpacity > 0"
-    class="flex flex-col items-center justify-center absolute w-screen h-screen bg-gradient-to-tr from-black-1 to-grad1-2 z-10 text-5xl"
+    class="flex flex-col items-center justify-center absolute w-screen h-screen bg-gradient-to-tr from-black-1 to-grad1-2 z-20 text-5xl"
   >
     <span>POPULATION</span>
     <span class="text-2xl opacity-50">loading...</span>
   </div>
-  <div class="flex flex-row gap-2 absolute top-10 left-10">
+  <div class="flex flex-row gap-2 absolute top-10 left-10 z-10">
     <a href="https://github.com/mariod8/population" target="_blank">
       <v-icon
-        class="hover:opacity-75 cursor-pointer"
+        class="hover:opacity-75"
         scale="1.25"
         animation="wrench"
         hover="true"

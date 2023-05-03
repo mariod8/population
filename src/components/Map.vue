@@ -92,7 +92,6 @@ export default {
           geometries: []
         }
       })
-      var progress = 0
       svgData.paths.forEach((path) => {
         const shapes = SVGLoader.createShapes(path)
 
@@ -104,8 +103,6 @@ export default {
           })
           meshData[path.userData?.node.id].geometries.push(meshGeometry)
         })
-        progress += 1
-        console.log(progress / svgData.paths.length)
       })
       for (const cc in meshData) {
         const geometry = BufferGeometryUtils.mergeBufferGeometries(meshData[cc].geometries)
