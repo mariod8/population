@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router"
+import Home from "@/views/Home.vue"
 </script>
 
 <template>
   <header></header>
-  <RouterView class="h-screen" />
+  <Home />
   <footer></footer>
 </template>
